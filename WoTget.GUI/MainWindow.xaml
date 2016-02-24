@@ -1,0 +1,105 @@
+﻿<Controls:MetroWindow  x:Class="WoTget.GUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:WoTget.GUI"
+        xmlns:localControls="clr-namespace:WoTget.GUI.Xamls"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        Title="WoTget"
+        Height="500"
+        Width="500"
+        WindowTransitionsEnabled="False"
+        GlowBrush="Black"
+        BorderThickness="0"
+        ResizeMode="CanResizeWithGrip"
+        SaveWindowPosition="True"
+        Loaded="MetroWindow_Loaded"
+        FontSize="16"
+        FontFamily="Segoe UI"
+        RenderOptions.ClearTypeHint="Enabled"
+        TextOptions.TextFormattingMode="Display"
+        LeftWindowCommandsOverlayBehavior="HiddenTitleBar"
+        RightWindowCommandsOverlayBehavior="HiddenTitleBar"
+        WindowButtonCommandsOverlayBehavior="HiddenTitleBar">
+    <Controls:MetroWindow.IconTemplate>
+        <DataTemplate>
+            <Grid Width="{TemplateBinding Width}"
+                 Height="{TemplateBinding Height}"
+                 Margin="4"
+                 Background="Transparent"
+                 RenderOptions.EdgeMode="Aliased"
+                 RenderOptions.BitmapScalingMode="HighQuality">
+                <Rectangle>
+                    <Rectangle.Fill>
+                        <VisualBrush Visual="{StaticResource appbar_alien}" />
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Grid>
+        </DataTemplate>
+    </Controls:MetroWindow.IconTemplate>
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button Click="menuItemWotFolder_Click"
+                    ToolTip="Set Wot Game Folder and ReInit Database" RenderOptions.EdgeMode="Aliased"
+                 RenderOptions.BitmapScalingMode="HighQuality">
+                <Rectangle Width="20" Height="20" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_folder}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button>
+            <Button Click="menuItemReload_Click"
+                    ToolTip="Reloads the grid" RenderOptions.EdgeMode="Aliased"
+                 RenderOptions.BitmapScalingMode="HighQuality">
+                <Rectangle Width="20" Height="20" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_refresh}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button>
+            <Button Click="menuItemSearch_Click"
+                    ToolTip="Search" RenderOptions.EdgeMode="Aliased"
+                 RenderOptions.BitmapScalingMode="HighQuality">
+                <Rectangle Width="20" Height="20" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_magnify}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button>
+            <ToggleButton IsChecked="{Binding ElementName=settings, Path=IsOpen}" Cursor="Hand" >
+                <Rectangle Width="20" Height="20" Fill="{Binding RelativeSource={RelativeSource AncestorType=ToggleButton}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_settings}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </ToggleButton>
+        </Controls:WindowCommands>
+
+    </Controls:MetroWindow.RightWindowCommands>
+    <Controls:MetroWindow.Flyouts>
+        <Controls:FlyoutsControl>
+            <Controls:Flyout x:Name="settings" Header="Settings" Position="Right"  IsModal="True" Theme="Accent" Width="500"
+                             Margin="100 0 0 0" AreAnimationsEnabled="True">
+                <localControls:flyoutControl x:Name="flyoutControl" />
+            </Controls:Flyout>
+        </Controls:FlyoutsControl>
+    </Controls:MetroWindow.Flyouts>
+    <Controls:MetroContentControl>
+        <Grid>
+            <Controls:ProgressRing IsActive="False" Name="progressRing" Panel.ZIndex="999"/>
+            <Controls:MetroAnimatedTabControl TabStripPlacement="Top" Controls:TabControlHelper.IsUnderlined="True" x:Name="tabControl" SelectionChanged="tabControl_SelectionChanged">
+
+                <TabItem Header="All" x:Name="tabAll" Padding="20 0 20 0">
+                    <localControls:tagTreeView x:Name="dataGridAll" MenuItemClicked="dataGrid_MenuItemClicked" />
+                </TabItem>
+                <TabItem Header="Installed" x:Name="tabInstalled" Padding="20 0 20 0">
+                    <localControls:tagTreeView x:Name="dataGridInstalled" MenuItemClicked="dataGrid_MenuItemClicked" />
+                </TabItem>
+                <TabItem Header="Updates" x:Name="tabUpdates" Padding="20 0 20 0">
+                    <localControls:tagTreeView x:Name="dataGridUpdates" MenuItemClicked="dataGrid_MenuItemClicked" />
+                </TabItem>
+            </Controls:MetroAnimatedTabControl>
+
+
+        </Grid>
+    </Controls:MetroContentControl>
+</Controls:MetroWindow>
