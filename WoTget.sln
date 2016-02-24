@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoTget", "WoTget\WoTget.csproj", "{71F3D81B-056C-49F3-BF18-8F810EFD75CD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{5949C5F4-4C87-4631-89FC-C753DD99D820}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoTget.GUI", "WoTget.GUI\WoTget.GUI.csproj", "{B2FE4482-6ADF-43EC-84B8-10DF28F77D96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoTget.Core", "WoTget.Core\WoTget.Core.csproj", "{661E6858-23CE-4181-A34F-262D0EEE8A21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoTget.Core.Repositories.GoogleDrive", "WoTget.Core.Repositories.GoogleDrive\WoTget.Core.Repositories.GoogleDrive.csproj", "{1FFD3C1E-787D-4BB3-877E-ECDCCA30D2CF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B5640640-B545-4591-B9D7-32BC14A60C17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoTget.Core.Test", "Tests\WoTget.Core.Test\WoTget.Core.Test.csproj", "{FDB73C98-ACBD-4858-B7B8-FB96FFCBC2C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoTget.GUI.RepositoryManager", "WoTget.GUI.RepositoryManager\WoTget.GUI.RepositoryManager.csproj", "{6B68D439-7EC4-4B88-BC19-A4618D3D26F1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{71F3D81B-056C-49F3-BF18-8F810EFD75CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71F3D81B-056C-49F3-BF18-8F810EFD75CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71F3D81B-056C-49F3-BF18-8F810EFD75CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71F3D81B-056C-49F3-BF18-8F810EFD75CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2FE4482-6ADF-43EC-84B8-10DF28F77D96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2FE4482-6ADF-43EC-84B8-10DF28F77D96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2FE4482-6ADF-43EC-84B8-10DF28F77D96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2FE4482-6ADF-43EC-84B8-10DF28F77D96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{661E6858-23CE-4181-A34F-262D0EEE8A21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{661E6858-23CE-4181-A34F-262D0EEE8A21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{661E6858-23CE-4181-A34F-262D0EEE8A21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{661E6858-23CE-4181-A34F-262D0EEE8A21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FFD3C1E-787D-4BB3-877E-ECDCCA30D2CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FFD3C1E-787D-4BB3-877E-ECDCCA30D2CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FFD3C1E-787D-4BB3-877E-ECDCCA30D2CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FFD3C1E-787D-4BB3-877E-ECDCCA30D2CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDB73C98-ACBD-4858-B7B8-FB96FFCBC2C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDB73C98-ACBD-4858-B7B8-FB96FFCBC2C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDB73C98-ACBD-4858-B7B8-FB96FFCBC2C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDB73C98-ACBD-4858-B7B8-FB96FFCBC2C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B68D439-7EC4-4B88-BC19-A4618D3D26F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B68D439-7EC4-4B88-BC19-A4618D3D26F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B68D439-7EC4-4B88-BC19-A4618D3D26F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B68D439-7EC4-4B88-BC19-A4618D3D26F1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{661E6858-23CE-4181-A34F-262D0EEE8A21} = {5949C5F4-4C87-4631-89FC-C753DD99D820}
+		{1FFD3C1E-787D-4BB3-877E-ECDCCA30D2CF} = {5949C5F4-4C87-4631-89FC-C753DD99D820}
+		{FDB73C98-ACBD-4858-B7B8-FB96FFCBC2C0} = {B5640640-B545-4591-B9D7-32BC14A60C17}
+	EndGlobalSection
+EndGlobal
