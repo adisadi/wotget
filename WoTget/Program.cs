@@ -60,7 +60,7 @@ namespace WoTget
 
                 AddConsoleAppender(invokedVerbInstance is BaseSubOptions && ((BaseSubOptions)invokedVerbInstance).Verbose ? Level.Debug : Level.Info);
 
-                Application.InitializeInstance(JsonConfig.Config.Global.GoogleKeyFile);
+                WoTget.Application.InitializeInstance(JsonConfig.Config.Global.GoogleKeyFile);
                 Application = Application.Instance;
 
 
