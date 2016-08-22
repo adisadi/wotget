@@ -27,9 +27,14 @@ namespace WoTget.GUI.RepositoryManager
 
         private void button3_Click(object sender, EventArgs e)
         {
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.LastSelectedFolder))
+                folderBrowserDialog.SelectedPath = Properties.Settings.Default.LastSelectedFolder;
             if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
             {
                 var folder = folderBrowserDialog.SelectedPath;
+
+                Properties.Settings.Default.LastSelectedFolder = folder;
+                Properties.Settings.Default.Save();
 
                 if (string.IsNullOrEmpty(nameTextBox.Text))
                 {

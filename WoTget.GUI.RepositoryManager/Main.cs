@@ -55,13 +55,38 @@ namespace WoTget.GUI.RepositoryManager
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            var package = new PackageModel() { Tags = new List<string>() };
+            var package = new PackageModel() { Tags = new List<string>(),Version="1.0" };
 
             var newD = new New(package);
             if (newD.ShowDialog() == DialogResult.OK)
             {
                 MyApplication.Instance.New(newD.PackageModel, newD.Files);
                LoadData();
+            }
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var package = (IPackage)dataGridView1.CurrentRow.DataBoundItem;
+
+            var newD = new New(package);
+            if (newD.ShowDialog() == DialogResult.OK)
+            {
+                MyApplication.Instance.New(newD.PackageModel, newD.Files);
+                LoadData();
+            }
+
+
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var package = (IPackage)dataGridView1.CurrentRow.DataBoundItem;
+
+            if (MessageBox.Show($"Delete Package {package.Name}?", "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+            {
+                MyApplication.Instance.Delete(package);
+                LoadData();
             }
         }
     }
