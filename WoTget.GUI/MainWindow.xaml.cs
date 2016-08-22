@@ -53,7 +53,7 @@ namespace WoTget.GUI
         {
             Client = Client.Instance;
 
-            if (!Client.IsDatabaseInitialized())
+            if (Client.IsDatabaseInitialized())
             {
                 flyoutControl.Model.WoTHome = Client.GetWotHome();
                 flyoutControl.Model.WoTVersion = Client.GetWotVersion();
