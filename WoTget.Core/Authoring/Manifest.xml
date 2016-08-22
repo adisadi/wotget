@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <package>
   <name>PackageName</name>
-  <description>Das ist eine Beschreigung des Packages</description>
+  <description>Das ist eine Beschreibung des Packages</description>
   <version>1.0</version>
   <authors></authors>
   <owners></owners>

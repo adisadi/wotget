@@ -12,7 +12,7 @@ namespace WoTget.Core
             var xdoc = XDocument.Load(Path.Combine(WoTHome, "paths.xml"));
             var node = xdoc.Descendants().SingleOrDefault(p => p.Name == "Path" && p.Value.Contains("res_mods"));
 
-            return Path.Combine(WoTHome, node.Value.TrimStart('.'));
+            return Path.Combine(WoTHome, node.Value.Trim().TrimStart('.'));
 
         }
 

@@ -51,20 +51,18 @@ namespace WoTget.GUI
 
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
-
-           
             Client = Client.Instance;
 
             if (!Client.IsDatabaseInitialized())
-            {
-                InitWotGameDirectory();
-            }
-            else
             {
                 flyoutControl.Model.WoTHome = Client.GetWotHome();
                 flyoutControl.Model.WoTVersion = Client.GetWotVersion();
 
                 ReloadGrid();
+            }
+            else
+            {
+                InitWotGameDirectory();
             }
         }
 
@@ -135,7 +133,7 @@ namespace WoTget.GUI
             {
                 AnimateHide = true,
                 AnimateShow = true,
-                DefaultText = Client.IsDatabaseInitialized() ? Client.GetWotHome() : @"C:\Games\World_of_Tanks"
+                DefaultText = Client.GetWotHome()!=string.Empty ? Client.GetWotHome() : @"C:\Games\World_of_Tanks"
             });
             if (!string.IsNullOrEmpty(result))
             {

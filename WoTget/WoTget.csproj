@@ -146,8 +146,11 @@
   </Target>
   <Import Project="ILBundle.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy $(TargetDir)WotSync-cb85fd04f1fa.p12 $(SolutionDir)build\ /Y
-xcopy $(TargetPath) $(SolutionDir)build\ /Y</PostBuildEvent>
+    <PostBuildEvent>xcopy $(TargetPath) $(SolutionDir)build\ /Y</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -52,7 +52,7 @@ namespace WoTget.GUI
 
         public bool IsDatabaseInitialized()
         {
-            return database.Exists;
+            return database.Exists && GetWotVersion()==database.WoTVersion;
         }
 
         public List<PackageModel> VerifiyPackageList(IEnumerable<IPackage> packageNames)
@@ -138,8 +138,6 @@ namespace WoTget.GUI
             }
         }
 
-
-
         public IEnumerable<IPackage> GetInstalledPackages()
         {
             return database.GetInstalledPackages();
@@ -160,11 +158,7 @@ namespace WoTget.GUI
             return repository.GetPackages(query, onlyLatestVersion);
         }
 
-        public static string GetWotVersion(string wotHome)
-        {
-            return WoTHelper.GetWoTVersion(wotHome);
-        }
-
+       
         public string GetWotVersion()
         {
             return WoTHelper.GetWoTVersion(database.WoTHome);

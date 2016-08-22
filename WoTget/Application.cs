@@ -49,9 +49,10 @@ namespace WoTget
 
         public bool IsDatabaseInitialized()
         {
-            return database.Exists;
+            return database.Exists && GetWotVersion()==database.WoTVersion;
         }
 
+     
         public List<PackageModel> VerifiyPackageList(IEnumerable<string> tags, string query, bool allVersion)
         {
             var packagemodelList = new List<PackageModel>();

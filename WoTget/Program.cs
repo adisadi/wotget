@@ -19,7 +19,7 @@ namespace WoTget
     class Program
     {
 
-        private static Application Application;
+        private static Application App;
 
         static int Main(string[] args)
         {
@@ -60,8 +60,8 @@ namespace WoTget
 
                 AddConsoleAppender(invokedVerbInstance is BaseSubOptions && ((BaseSubOptions)invokedVerbInstance).Verbose ? Level.Debug : Level.Info);
 
-                WoTget.Application.InitializeInstance(JsonConfig.Config.Global.GoogleKeyFile);
-                Application = Application.Instance;
+                WoTget.Application.InitializeInstance((string)JsonConfig.Config.Global.GoogleKeyFile);
+                App = Application.Instance;
 
 
                 if (invokedVerb == "init")
@@ -69,9 +69,8 @@ namespace WoTget
                     return InitCommand((InitSubOptions)invokedVerbInstance);
                 }
 
-                if (!Application.IsDatabaseInitialized() && invokedVerb != "init")
+                if (!App.IsDatabaseInitialized() && invokedVerb != "init" )
                 {
-
                     Console.WriteLine();
                     ConsoleHelper.ColoredConsoleWrite(ConsoleColor.Yellow, $"What's your WoT Game Directory? (Default:C:\\Games\\World_of_Tanks):");
                     string wotDirectory = Console.ReadLine();
@@ -87,7 +86,7 @@ namespace WoTget
 
 
 
-                ConsoleHelper.ColoredConsoleWriteLine(ConsoleColor.Green, $"WoT Version: '{Application.GetWotVersion()}' Game Directory: '{Application.GetWotHome()}'");
+                ConsoleHelper.ColoredConsoleWriteLine(ConsoleColor.Green, $"WoT Version: '{App.GetWotVersion()}' Game Directory: '{App.GetWotHome()}'");
                 Console.WriteLine("");
 
                 if (invokedVerb == "list")
@@ -185,7 +184,7 @@ namespace WoTget
             }
 
             Console.WriteLine("");
-            Application.Init(initSubOptions.WotGameDirectory, initSubOptions.Force);
+            App.Init(initSubOptions.WotGameDirectory, initSubOptions.Force);
 
             return 0;
         }
@@ -200,20 +199,20 @@ namespace WoTget
                 return 1;
             }
 
-            Application.UninstallPackages(uninstallSubOptions.Packages);
+            App.UninstallPackages(uninstallSubOptions.Packages);
 
             return 0;
         }
 
         private static int RemoveCommand(RemoveSubOptions removeSubOptions)
         {
-            Application.RemovePackages(removeSubOptions.Name);
+            App.RemovePackages(removeSubOptions.Name);
             return 0;
         }
 
         private static int AddCommand(AddSubOptions uploadSubOptions)
         {
-            Application.AddPackages(uploadSubOptions.Name,uploadSubOptions.Directory, uploadSubOptions.Description, uploadSubOptions.Tags, uploadSubOptions.Authors, uploadSubOptions.Owners, uploadSubOptions.ProjectUrl, uploadSubOptions.Version);
+            App.AddPackages(uploadSubOptions.Name,uploadSubOptions.Directory, uploadSubOptions.Description, uploadSubOptions.Tags, uploadSubOptions.Authors, uploadSubOptions.Owners, uploadSubOptions.ProjectUrl, uploadSubOptions.Version);
             return 0;
         }
 
@@ -223,7 +222,7 @@ namespace WoTget
             ConsoleHelper.ColoredConsoleWriteLine(ConsoleColor.White, "(u=Installed and Update available/i=Installed/*=not Installed)");
             Console.WriteLine("");
 
-            var result = Application.VerifiyPackageList(listSubOptions.Tags,listSubOptions.Query,listSubOptions.AllVersion);
+            var result = App.VerifiyPackageList(listSubOptions.Tags,listSubOptions.Query,listSubOptions.AllVersion);
             var maxLenght = Convert.ToInt32(result.Select(p => p.Name).Aggregate("", (max, cur) => max.Length > cur.Length ? max : cur).Length) * -1;
             foreach (var package in result)
             {
@@ -251,7 +250,7 @@ namespace WoTget
                 return 1;
             }
 
-            Application.InstallPackages(installSubOptions.Packages);
+            App.InstallPackages(installSubOptions.Packages);
 
             return 0;
         }
@@ -264,7 +263,7 @@ namespace WoTget
                 return 1;
             }
 
-            Application.UpdatePackages(updateSubOptions.Packages);
+            App.UpdatePackages(updateSubOptions.Packages);
 
             return 0;
         }
