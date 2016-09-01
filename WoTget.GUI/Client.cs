@@ -129,7 +129,8 @@ namespace WoTget.GUI
             {      
                 if (outdatedPackages.ExistsByName(package))
                 {
-                    database.UninstallPackage(package);
+                    var packageToDeinstall = outdatedPackages.FindByName(package.Name).SingleOrDefault();
+                    database.UninstallPackage(packageToDeinstall);
                     using (var stream = repository.GetPackage(package))
                     {
                         database.InstallPackage(stream);
@@ -179,7 +180,7 @@ namespace WoTget.GUI
             {
                 if (packages.ExistsByName(installed))
                 {
-                    var package = packages.FindByNameAndVersion(installed);
+                    var package = packages.FindByName(installed.Name).SingleOrDefault();
                     if (package.SemanticVersion() > installed.SemanticVersion())
                     {
                         outdatedPackages.Add(installed);
