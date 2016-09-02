@@ -58,6 +58,15 @@ namespace WoTget
 
                 ConsoleHelper.ColoredConsoleWriteLine(ConsoleColor.Yellow, $"WoTget Version: {version.ToString()}");
 
+                var newVersion = GitChecker.CheckNewVersion();
+                if (newVersion!=null)
+                {
+                    ConsoleHelper.ColoredConsoleWriteLine(ConsoleColor.Red, $"New WoTget Version: {newVersion.ToString()}");
+                    System.Diagnostics.Process.Start("https://github.com/adisadi/wotget/releases/latest");
+                    return 0;
+                }
+
+
                 AddConsoleAppender(invokedVerbInstance is BaseSubOptions && ((BaseSubOptions)invokedVerbInstance).Verbose ? Level.Debug : Level.Info);
 
                 WoTget.Application.InitializeInstance((string)JsonConfig.Config.Global.GoogleKeyFile);

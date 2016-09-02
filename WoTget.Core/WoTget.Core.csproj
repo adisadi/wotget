@@ -55,6 +55,7 @@
     <Compile Include="Database\IDatabase.cs" />
     <Compile Include="Database\LocalDatabase.cs" />
     <Compile Include="Database\LocalDatabaseConfig.cs" />
+    <Compile Include="GitChecker.cs" />
     <Compile Include="Installer\IPackageInstaller.cs" />
     <Compile Include="Installer\PackageInstaller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
