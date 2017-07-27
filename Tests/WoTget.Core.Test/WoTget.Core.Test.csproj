@@ -52,10 +52,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="UnitTestLocalDatabase.cs" />
+    <Compile Include="UnitTestDetectFormat.cs" />
     <Compile Include="UnitTestPackageBuilder.cs" />
-    <Compile Include="UnitTestLocalRepository.cs" />
-    <Compile Include="UnitTestManifestHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -65,16 +63,46 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Ressources\Manifest.xml">
+    <Content Include="Ressources\mods\9.19 Lasers By PolarFox\res_mods\0.9.19.1\objects\lines\default.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Ressources\modpack\res_mods\testfile.txt">
+    <Content Include="Ressources\mods\Shadow\objects\null.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\scripts\client\mods\tank_invis.xml">
+    <Content Include="Ressources\mods\Shadow\scripts\client\mods\tank_invis.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Ressources\mods\Tundra\res_mods\0.9.13\scripts\client\mods\t20150815.xml">
+    <Content Include="Ressources\mods\Shadow\system\fonts\Arial_12.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Ressources\mods\Shadow\system\fonts\Courier_New_10.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Ressources\mods\Shadow\system\fonts\Courier_New_11.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Ressources\mods\Shadow\system\fonts\Courier_New_13.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Ressources\mods\Shadow\system\fonts\Courier_New_15.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Ressources\mods\Shadow\system\fonts\HGSoeiKakugothicUB_12.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Ressources\mods\Shadow\system\fonts\HGSoeiKakugothicUB_15.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Ressources\mods\Shadow\system\fonts\HGSoeiKakugothicUB_20.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Ressources\mods\Shadow\system\fonts\Verdana_15.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Ressources\mods\Shadow\system\fonts\Verdana_20.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Ressources\mods\Tundra\0.9.13\scripts\client\mods\t20150815.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -82,6 +110,36 @@
     <Content Include="Ressources\mods\SAE_Auto_aim_V19.5_MaxJaar_Config\res_mods\0.9.13\scripts\client\gui\mods\mod_auto_aim.pyc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Ressources\mods\9.19 Lasers By PolarFox\res_mods\0.9.19.1\objects\lines\default.model">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Ressources\mods\9.19 Lasers By PolarFox\res_mods\0.9.19.1\objects\lines\default.primitives">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Ressources\mods\9.19 Lasers By PolarFox\res_mods\0.9.19.1\objects\lines\default.visual">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Ressources\mods\9.19 Lasers By PolarFox\res_mods\0.9.19.1\scripts\client\gui\mods\mod_lines.pyc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Ressources\mods\9.19 Lasers By PolarFox\res_mods\configs\lines.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Ressources\mods\9.19.1 Destroyed Objects On The Minimap And InGame By PolarFox.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Ressources\mods\9.19.1 Destroyed Objects On The Minimap And InGame By PolarFox\9.19.1 Destroyed Objects On The Minimap And InGame By PolarFox\mods\0.9.19.1\bw.minimap_dmarkers.wotmod">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Ressources\mods\9.19.1 Destroyed Objects On The Minimap And InGame By PolarFox\9.19.1 Destroyed Objects On The Minimap And InGame By PolarFox\mods\configs\bw_minimap_dmarkers.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Ressources\mods\9.19.1 Path Finder 3D By ProTanki.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Ressources\mods\SAE_Auto_aim_V19.5_MaxJaar_Config.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Ressources\mods\SAE_Auto_aim_V19.5_MaxJaar_Config\res_mods\configs\auto_aim\auto_aim.cfg" />
     <Content Include="Ressources\mods\SAE_Auto_aim_V19.5_MaxJaar_Config\res_mods\configs\auto_aim\Lang\English.lng">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -89,111 +147,80 @@
     <Content Include="Ressources\mods\SAE_Auto_aim_V19.5_MaxJaar_Config\res_mods\configs\auto_aim\Lang\Russian.lng">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Ressources\mods\SAE_Auto_aim_V19.5_test\res_mods\0.9.13\scripts\client\gui\mods\mod_auto_aim.pyc">
+    <None Include="Ressources\mods\SAE_Auto_aim_V19.5_test\SAE_Auto_aim_V19.5_test\res_mods\0.9.13\scripts\client\gui\mods\mod_auto_aim.pyc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\SAE_Auto_aim_V19.5_test\res_mods\configs\auto_aim\auto_aim.cfg">
+    </None>
+    <None Include="Ressources\mods\SAE_Auto_aim_V19.5_test\SAE_Auto_aim_V19.5_test\res_mods\configs\auto_aim\auto_aim.cfg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\SAE_Auto_aim_V19.5_test\res_mods\configs\auto_aim\Lang\English.lng">
+    </None>
+    <None Include="Ressources\mods\SAE_Auto_aim_V19.5_test\SAE_Auto_aim_V19.5_test\res_mods\configs\auto_aim\Lang\English.lng">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\objects\null.dds">
+    </None>
+    <None Include="Ressources\mods\Shadow.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\scripts\client\CameraNode.pyc">
+    </None>
+    <None Include="Ressources\mods\Shadow\scripts\client\CameraNode.pyc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\scripts\client\mods\tank_invis.pyc">
+    </None>
+    <None Include="Ressources\mods\Shadow\scripts\client\mods\tank_invis.pyc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\scripts\client\mods\__init__.pyc">
+    </None>
+    <None Include="Ressources\mods\Shadow\scripts\client\mods\__init__.pyc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\Arial_12.dds">
+    </None>
+    <None Include="Ressources\mods\Shadow\system\fonts\default_medium.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\Courier_New_10.dds">
+    </None>
+    <None Include="Ressources\mods\Shadow\system\fonts\default_small.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\Courier_New_11.dds">
+    </None>
+    <None Include="Ressources\mods\Shadow\system\fonts\default_smaller.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\Courier_New_13.dds">
+    </None>
+    <None Include="Ressources\mods\Shadow\system\fonts\fontpicker.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\Courier_New_15.dds">
+    </None>
+    <None Include="Ressources\mods\Shadow\system\fonts\hpmp_panel.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\default_medium.font">
+    </None>
+    <None Include="Ressources\mods\Shadow\system\fonts\pfm_nearby.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\default_small.font">
+    </None>
+    <None Include="Ressources\mods\Shadow\system\fonts\pfm_shadow.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\default_smaller.font">
+    </None>
+    <None Include="Ressources\mods\Shadow\system\fonts\system_large.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\fontpicker.font">
+    </None>
+    <None Include="Ressources\mods\Shadow\system\fonts\system_medium.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\HGSoeiKakugothicUB_12.dds">
+    </None>
+    <None Include="Ressources\mods\Shadow\system\fonts\system_small.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\HGSoeiKakugothicUB_15.dds">
+    </None>
+    <None Include="Ressources\mods\Shadow\system\fonts\system_tiny.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\HGSoeiKakugothicUB_20.dds">
+    </None>
+    <None Include="Ressources\mods\Shadow\system\fonts\verdana_medium.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\hpmp_panel.font">
+    </None>
+    <None Include="Ressources\mods\Shadow\system\fonts\verdana_small.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\pfm_nearby.font">
+    </None>
+    <None Include="Ressources\mods\Tundra.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\pfm_shadow.font">
+    </None>
+    <None Include="Ressources\mods\Tundra\0.9.13\scripts\client\CameraNode.pyc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\system_large.font">
+    </None>
+    <None Include="Ressources\mods\Tundra\0.9.13\scripts\client\mods\t20150815.pyc" />
+    <None Include="Ressources\mods\Tundra\0.9.13\scripts\client\mods\__init__.pyc" />
+    <None Include="Ressources\mods\Tundra\0.9.13\shaders\speedtree\semitransparent.10.fxo">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\system_medium.font">
+    </None>
+    <None Include="Ressources\mods\Tundra\0.9.13\shaders\speedtree\semitransparent.11.fxo">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\system_small.font">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\system_tiny.font">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\Verdana_15.dds">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\Verdana_20.dds">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\verdana_medium.font">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Shadow\res_mods\0.9.13\system\fonts\verdana_small.font">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Tundra\res_mods\0.9.13\scripts\client\CameraNode.pyc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Tundra\res_mods\0.9.13\scripts\client\mods\t20150815.pyc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Tundra\res_mods\0.9.13\scripts\client\mods\__init__.pyc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Tundra\res_mods\0.9.13\shaders\speedtree\semitransparent.10.fxo">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Ressources\mods\Tundra\res_mods\0.9.13\shaders\speedtree\semitransparent.11.fxo">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

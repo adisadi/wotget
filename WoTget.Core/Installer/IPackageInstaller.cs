@@ -9,7 +9,7 @@ namespace WoTget.Core.Installer
 {
     public interface IPackageInstaller
     {
-        IEnumerable<string> InstallPackageStream(Stream packageStream, string destinationPath);
-        void UninstallPackageStream(Stream packageStream, string destinationPath);
+        IEnumerable<string> InstallPackageStream(Stream packageStream, string wotHome);
+        void UninstallPackageStream(Stream packageStream, string wotHome);
     }
 }

@@ -19,12 +19,9 @@ namespace WoTget.GUI.Model
 
         public PackageModel(IPackage package)
         {
-            Name = package.Name;
-            Owners = package.Owners;
-            ProjectUrl = package.ProjectUrl;
+            Name = package.Name;  
             Tags = package.Tags;
             Version = package.Version;
-            Authors = package.Authors;
             Description = package.Description;
         }
 

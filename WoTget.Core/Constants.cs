@@ -10,10 +10,8 @@ namespace WoTget.Core
     {
         public const string PackageExtension = ".wotpkg";
 
-        public const string ManifestExtension = ".wotspec";
+        public const string ModsFolder = "mods";
 
-        public const string ManifestFileName = "manifest.wotspec";
-
-        public const string PackageRootFolder = "res_mods";
+        public const string WotModExtension = ".wotmod";
     }
 }

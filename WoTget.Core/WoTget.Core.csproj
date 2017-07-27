@@ -43,33 +43,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authoring\IPackage.cs" />
-    <Compile Include="Authoring\ManifestHelper.cs" />
+    <Compile Include="Authoring\MetaHelper.cs" />
     <Compile Include="Authoring\Package.cs" />
     <Compile Include="Authoring\PackageBuilder.cs" />
     <Compile Include="Authoring\PackageHelper.cs" />
     <Compile Include="Authoring\PackageReader.cs" />
     <Compile Include="Authoring\SemanticVersion.cs" />
+    <Compile Include="Authoring\WotModPackageBuilder.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Database\BaseDatabase.cs" />
-    <Compile Include="Database\DatabaseNotFoundException.cs" />
-    <Compile Include="Database\IDatabase.cs" />
-    <Compile Include="Database\LocalDatabase.cs" />
-    <Compile Include="Database\LocalDatabaseConfig.cs" />
-    <Compile Include="GitChecker.cs" />
+    <Compile Include="Format\FormatDetect.cs" />
     <Compile Include="Installer\IPackageInstaller.cs" />
     <Compile Include="Installer\PackageInstaller.cs" />
+    <Compile Include="LocalModManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\IPackageLookup.cs" />
     <Compile Include="Repositories\IRepository.cs" />
-    <Compile Include="Repositories\LocalRepository.cs" />
     <Compile Include="Repositories\RepositoryFactory.cs" />
     <Compile Include="WoTHelper.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Authoring\Manifest.xml" />
-    <None Include="Authoring\Manifest.xsd">
-      <SubType>Designer</SubType>
-    </None>
+    <Compile Include="Zip\ZipStorer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

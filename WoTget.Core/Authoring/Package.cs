@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WoTget.Core.Authoring
 {
     public class Package : IPackage
     {
+        public string Id
+        {
+            get
+            {
+                return Name.Replace(" ", "_");
+            }
+        }
         public string Name { get; set; }
         public string Description { get; set; }
         public string Version { get; set; }
-        public string Authors { get; set; }
-        public string Owners { get; set; }
-        public string ProjectUrl { get; set; }
+
         public List<string> Tags { get; set; }
 
         public static bool operator ==(Package a, Package b)
@@ -32,7 +34,7 @@ namespace WoTget.Core.Authoring
         public bool Equals(IPackage other)
         {
             if (other == null) return false;
-            return this.Name == other.Name && this.Version == other.Version;
+            return this.Version == other.Version && this.Id == other.Id;
         }
 
         public override bool Equals(Object obj)

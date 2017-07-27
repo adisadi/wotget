@@ -11,9 +11,5 @@ namespace WoTget.CmdLineOptions
     {
         [ValueOption(0)]
         public string WotGameDirectory { get; set; }
-
-        [Option('f', "force", Required = false, HelpText = "ReInits an existing Environment", DefaultValue = false)]
-        public bool Force { get; set; }
-
     }
 }

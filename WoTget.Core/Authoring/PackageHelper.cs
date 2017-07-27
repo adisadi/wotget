@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace WoTget.Core.Authoring
 {
@@ -8,7 +9,7 @@ namespace WoTget.Core.Authoring
     {
         public static string FileName(this IPackage package)
         {
-            return $"{package.Name}.{package.SemanticVersion().ToNormalizedString()}{Constants.PackageExtension}";
+            return $"{package.Id}.{package.SemanticVersion().ToNormalizedString()}{Constants.PackageExtension}";
         }
 
         public static SemanticVersion SemanticVersion(this IPackage package)
@@ -16,17 +17,6 @@ namespace WoTget.Core.Authoring
             return new SemanticVersion(package.Version);
         }
 
-        public static string ToManifestString(this IPackage package)
-        {
-            string xml = string.Empty;
-            using (var memoryStream = new MemoryStream())
-            {
-                ManifestHelper.Save(package, memoryStream);
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                xml = new StreamReader(memoryStream).ReadToEnd();
-            }
-            return xml;
-        }
 
         public static IEnumerable<IPackage> FindByName(this IEnumerable<IPackage> packages, string name)
         {
@@ -66,6 +56,20 @@ namespace WoTget.Core.Authoring
         public static IEnumerable<IPackage> OnlyLatestVersion(this IEnumerable<IPackage> packages)
         {
             return packages.Where(p => packages.Where(p1 => p1.Name == p.Name).Select(p2 => new SemanticVersion(p2.Version)).Max().ToNormalizedString() == p.SemanticVersion().ToNormalizedString());
+        }
+
+        public static string GetWotVersionFolder(string path)
+        {
+            var match = Regex.Match(path, "(?<=\\\\)([0-9]{1,2}\\.?)+(?=\\\\)");
+            if (match.Success)
+                return match.Value;
+            return string.Empty;
+        }
+
+        public static string RemoveUntilFolder(string folder, string untilFolder)
+        {
+            if (folder.IndexOf(untilFolder) < 0) return "";
+            return folder.Substring(folder.IndexOf(untilFolder) + untilFolder.Length).Trim(Path.DirectorySeparatorChar);
         }
     }
 }

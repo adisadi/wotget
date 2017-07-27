@@ -58,27 +58,25 @@ namespace WoTget
 
                 ConsoleHelper.ColoredConsoleWriteLine(ConsoleColor.Yellow, $"WoTget Version: {version.ToString()}");
 
-                var newVersion = GitChecker.CheckNewVersion();
-                if (newVersion!=null)
-                {
-                    ConsoleHelper.ColoredConsoleWriteLine(ConsoleColor.Red, $"New WoTget Version: {newVersion.ToString()}");
-                    System.Diagnostics.Process.Start("https://github.com/adisadi/wotget/releases/latest");
-                    return 0;
-                }
-
-
                 AddConsoleAppender(invokedVerbInstance is BaseSubOptions && ((BaseSubOptions)invokedVerbInstance).Verbose ? Level.Debug : Level.Info);
 
                 WoTget.Application.InitializeInstance((string)JsonConfig.Config.Global.GoogleKeyFile);
                 App = Application.Instance;
 
-
+ 
                 if (invokedVerb == "init")
                 {
-                    return InitCommand((InitSubOptions)invokedVerbInstance);
+                    var returnValue = InitCommand((InitSubOptions)invokedVerbInstance);
+                    if (returnValue == 0)
+                    {
+                        ConsoleHelper.ColoredConsoleWrite(ConsoleColor.Yellow, $"WoT Game Directory set to:" + ((InitSubOptions)invokedVerbInstance).WotGameDirectory);
+                        Properties.Settings.Default.WotGameDirectory = ((InitSubOptions)invokedVerbInstance).WotGameDirectory;
+                        Properties.Settings.Default.Save();
+                    }
+                    return returnValue;
                 }
 
-                if (!App.IsDatabaseInitialized() && invokedVerb != "init" )
+                if (InitCommand(new InitSubOptions { WotGameDirectory = WoTget.Properties.Settings.Default.WotGameDirectory }) != 0)
                 {
                     Console.WriteLine();
                     ConsoleHelper.ColoredConsoleWrite(ConsoleColor.Yellow, $"What's your WoT Game Directory? (Default:C:\\Games\\World_of_Tanks):");
@@ -91,9 +89,15 @@ namespace WoTget
                     var returnValue = InitCommand(new InitSubOptions { WotGameDirectory = wotDirectory });
                     if (returnValue == 1)
                         return 1;
+                    else {
+
+                        ConsoleHelper.ColoredConsoleWrite(ConsoleColor.Yellow, $"WoT Game Directory set to:" + wotDirectory);
+                        Properties.Settings.Default.WotGameDirectory = wotDirectory;
+                        Properties.Settings.Default.Save();
+                    }
                 }
 
-
+                App.Init(Properties.Settings.Default.WotGameDirectory);
 
                 ConsoleHelper.ColoredConsoleWriteLine(ConsoleColor.Green, $"WoT Version: '{App.GetWotVersion()}' Game Directory: '{App.GetWotHome()}'");
                 Console.WriteLine("");
@@ -172,7 +176,8 @@ namespace WoTget
 
             if (string.IsNullOrEmpty(initSubOptions.WotGameDirectory))
             {
-                ConsoleHelper.WriteError("WoT Game Directory not set!\n Usgae Example:\nwotget init <wotgamedirectory>");
+                ConsoleHelper.WriteError("WoT Game Directory not set!\n Usage Example:\nwotget init <wotgamedirectory>");
+                ConsoleHelper.WriteError("Current Directory: " + Properties.Settings.Default.WotGameDirectory);
                 return 1;
             }
 
@@ -193,7 +198,7 @@ namespace WoTget
             }
 
             Console.WriteLine("");
-            App.Init(initSubOptions.WotGameDirectory, initSubOptions.Force);
+            App.Init(initSubOptions.WotGameDirectory);
 
             return 0;
         }
@@ -221,7 +226,7 @@ namespace WoTget
 
         private static int AddCommand(AddSubOptions uploadSubOptions)
         {
-            App.AddPackages(uploadSubOptions.Name,uploadSubOptions.Directory, uploadSubOptions.Description, uploadSubOptions.Tags, uploadSubOptions.Authors, uploadSubOptions.Owners, uploadSubOptions.ProjectUrl, uploadSubOptions.Version);
+            App.AddPackages(uploadSubOptions.Name,uploadSubOptions.Directory, uploadSubOptions.Description, uploadSubOptions.Tags,  uploadSubOptions.Version);
             return 0;
         }
 

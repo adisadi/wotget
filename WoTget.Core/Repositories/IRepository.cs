@@ -8,7 +8,7 @@ namespace WoTget.Core.Repositories
     {
         void RemovePackage(IPackage package);
 
-        void AddPackage(IPackage package, IEnumerable<string> files);
+        void AddPackage(IPackage package, Stream stream);
 
         Stream GetPackage(IPackage package);
       

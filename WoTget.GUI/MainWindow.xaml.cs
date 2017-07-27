@@ -52,8 +52,8 @@ namespace WoTget.GUI
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
             Client = Client.Instance;
-
-            if (Client.IsDatabaseInitialized())
+            Client.Init(Properties.Settings.Default.WotHome);
+            if (Client.HasWotHome())
             {
                 flyoutControl.Model.WoTHome = Client.GetWotHome();
                 flyoutControl.Model.WoTVersion = Client.GetWotVersion();
@@ -139,7 +139,9 @@ namespace WoTget.GUI
             {
                 try
                 {
-                    Client.Init(result, Client.IsDatabaseInitialized());
+                    Client.Init(result);
+                    Properties.Settings.Default.WotHome = result;
+                    Properties.Settings.Default.Save();
                     flyoutControl.Model.WoTHome = Client.GetWotHome();
                     flyoutControl.Model.WoTVersion = Client.GetWotVersion();
                     ReloadGrid();

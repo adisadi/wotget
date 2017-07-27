@@ -15,7 +15,7 @@ namespace WoTget.Core.Repositories.GoogleDrive
         private DriveService driveService;
         private Google.Apis.Drive.v2.Data.File googleModRoot;
 
-        public const string PropertyModPackName = "WoTgetRepositoryV2";
+        public const string PropertyModPackName = "WoTgetRepositoryV3";
         public const string PropertyReposityoryRoot = "WoTget";
         public const string PropertyVersion = "Version";
         public const string PropertyAuthors = "Authors";
@@ -47,7 +47,7 @@ namespace WoTget.Core.Repositories.GoogleDrive
             Helper.DeleteFile(driveService, file.Id);
         }
 
-        public void AddPackage(IPackage package, IEnumerable<string> files)
+        public void AddPackage(IPackage package, Stream packageStream)
         {
             log.Debug($"Upload Google Drive Package '{package.Name}' Version:'{package.Version}' in '{PropertyReposityoryRoot}'");
 
@@ -57,10 +57,7 @@ namespace WoTget.Core.Repositories.GoogleDrive
 
             var properties = new List<Property>() {
                 new Property() { Key = PropertyModPackName, Value = PropertyReposityoryRoot, Visibility = "PRIVATE" },
-                new Property() { Key = PropertyVersion, Value = package.Version, Visibility = "PRIVATE" },
-                new Property() { Key = PropertyAuthors, Value = package.Authors, Visibility = "PRIVATE" },
-                new Property() { Key = PropertyOwners, Value = package.Owners, Visibility = "PRIVATE" },
-                new Property() { Key = PropertyProjectUrl, Value = package.ProjectUrl, Visibility = "PRIVATE" }
+                new Property() { Key = PropertyVersion, Value = package.Version, Visibility = "PRIVATE" }     
             };
 
             if (package.Tags != null)
@@ -71,9 +68,9 @@ namespace WoTget.Core.Repositories.GoogleDrive
                 }
             }
 
-            using (var stream = PackageBuilder.CreatePackage(package, files))
+            using (packageStream)
             {
-                Helper.UploadFile(driveService, stream, package.FileName(), package.Description, googleModRoot.Id, properties.ToArray());
+                Helper.UploadFile(driveService, packageStream, package.FileName(), package.Description, googleModRoot.Id, properties.ToArray());
             }
         }
 
@@ -159,11 +156,8 @@ namespace WoTget.Core.Repositories.GoogleDrive
         {
             return new Package()
             {
-                Name = Path.GetFileNameWithoutExtension(f.Title).Replace(new SemanticVersion(GetFilePropertySafe(f, PropertyVersion)).ToNormalizedString(), "").TrimEnd('.'),
-                Authors = GetFilePropertySafe(f, PropertyAuthors),
+                Name = Path.GetFileNameWithoutExtension(f.Title).Replace(new SemanticVersion(GetFilePropertySafe(f, PropertyVersion)).ToNormalizedString(), "").TrimEnd('.').Replace("_"," "),
                 Description = f.Description,
-                Owners = GetFilePropertySafe(f, PropertyOwners),
-                ProjectUrl = GetFilePropertySafe(f, PropertyProjectUrl),
                 Version = GetFilePropertySafe(f, PropertyVersion),
                 Tags = f.Properties.Where(p => p.Key != PropertyModPackName && p.Key == p.Value).Select(p => p.Key).ToList()
             };

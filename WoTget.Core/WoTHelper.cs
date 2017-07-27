@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace WoTget.Core
@@ -21,4 +22,8 @@ namespace WoTget.Core
             return new DirectoryInfo(GetResModsFolder(WoTHome)).Name;
         }
     }
+
+
+   
+   
 }

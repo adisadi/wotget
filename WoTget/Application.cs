@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using WoTget.Core;
 using WoTget.Core.Authoring;
-using WoTget.Core.Database;
-using WoTget.Core.Installer;
 using WoTget.Core.Repositories;
 using WoTget.Core.Repositories.GoogleDrive;
 using WoTget.Model;
@@ -36,23 +34,16 @@ namespace WoTget
         }
         #endregion
 
-
-        private IDatabase database;
+        private LocalModManager localModManager;
         private IRepository repository;
 
         private Application(string keyFile)
         {
-         
-            database = new LocalDatabase(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "database"),new PackageInstaller());
+            localModManager = new LocalModManager();
             repository = new GoogleDriveRepository(keyFile);
         }
 
-        public bool IsDatabaseInitialized()
-        {
-            return database.Exists && GetWotVersion()==database.WoTVersion;
-        }
 
-     
         public List<PackageModel> VerifiyPackageList(IEnumerable<string> tags, string query, bool allVersion)
         {
             var packagemodelList = new List<PackageModel>();
@@ -70,7 +61,7 @@ namespace WoTget
                 packages = GetPackagesFromRepository(!allVersion).ToList();
             }
 
-            var installedPackages = database.GetInstalledPackages();
+            var installedPackages = localModManager.GetInstalledPackages();
             var repositoryPackages = repository.GetPackages(false);
 
 
@@ -145,36 +136,39 @@ namespace WoTget
 
             log.Info("");
 
-            var installedPackages = database.GetInstalledPackages();
+            var installedPackages = localModManager.GetInstalledPackages();
 
             foreach (var package in packagesToInstall)
             {
                 if (installedPackages.ExistsByName(package))
                 {
                     log.Info($"Remove installed Package: '{package.Name}'");
-                    database.UninstallPackage(package);
+                    using (var stream = repository.GetPackage(package))
+                    {
+                        localModManager.UninstallPackage(stream);
+                    }
                 }
 
                 log.Info($"Downloading Package: '{package.Name}'");
                 using (var stream = repository.GetPackage(package))
                 {
                     log.Info($"Installing Package: '{package.Name}'");
-                    database.InstallPackage(stream);
+                    localModManager.InstallPackage(stream);
                 }
 
             }
         }
 
-        public void Init(string wotGameDirectory, bool force)
+        public void Init(string wotGameDirectory)
         {
-            database.Init(wotGameDirectory, WoTHelper.GetWoTVersion(wotGameDirectory), force);
+            localModManager.Init(wotGameDirectory);
         }
 
         public void UninstallPackages(IList<string> packageNames)
         {
             if (packageNames == null || packageNames.Count == 0) throw new ArgumentException("No Packages spezified!");
 
-            var packages = database.GetInstalledPackages();
+            var packages = localModManager.GetInstalledPackages();
             if (!(packageNames.Count == 1 && packageNames[0].Trim() == "."))
             {
                 packages = packages.Where(p => packageNames.Contains(p.Name)).ToList();
@@ -185,7 +179,11 @@ namespace WoTget
                 try
                 {
                     log.Info($"Uninstall Package: '{package.Name}'");
-                    database.UninstallPackage(package);
+                    using (var stream = repository.GetPackage(package))
+                    {
+                        localModManager.UninstallPackage(stream);
+                    }
+                       
                 }
                 catch (ArgumentException ex)
                 {
@@ -222,7 +220,10 @@ namespace WoTget
 
                     log.Info($"Updating Package: 'packageName'");
                     log.Info($"Remove installed Package: '{package.Name}' Version: '{package.Version}'");
-                    database.UninstallPackage(package);
+                    using (var stream = repository.GetPackage(package))
+                    {
+                        localModManager.UninstallPackage(stream);
+                    }
 
                     var packageToInstall = repositoryPackages.FindByName(packageName).SingleOrDefault();
 
@@ -230,7 +231,7 @@ namespace WoTget
                     using (var stream = repository.GetPackage(packageToInstall))
                     {
                         log.Info($"Installing Package: '{packageToInstall.Name}' Version: '{packageToInstall.Version}'");
-                        database.InstallPackage(stream);
+                        localModManager.InstallPackage(stream);
                     }
                 }
                 else
@@ -244,7 +245,7 @@ namespace WoTget
 
         public IEnumerable<IPackage> GetInstalledPackages()
         {
-            return database.GetInstalledPackages();
+            return localModManager.GetInstalledPackages();
         }
 
         public IEnumerable<IPackage> GetPackagesFromRepository(bool onlyLatestVersion = true)
@@ -269,12 +270,12 @@ namespace WoTget
 
         public string GetWotVersion()
         {
-            return WoTHelper.GetWoTVersion(database.WoTHome);
+            return WoTHelper.GetWoTVersion(localModManager.WotHome);
         }
 
         public string GetWotHome()
         {
-            return database.WoTHome;
+            return localModManager.WotHome;
         }
 
 
@@ -309,7 +310,7 @@ namespace WoTget
             }
         }
 
-        public void AddPackages(string name, string directory, string description, IEnumerable<string> tags, string authors, string owners, string projectUrl, string version)
+        public void AddPackages(string name, string directory, string description, IEnumerable<string> tags, string version)
         {
 
             if (name.Contains(" "))
@@ -319,35 +320,35 @@ namespace WoTget
             }
 
 
-            if (!new DirectoryInfo(directory).GetDirectories().Any(d => d.Name == "res_mods"))
-            {
-                log.Error($"Directory '{directory}' doesn't contains res_mods Directory!");
-                return;
-            }
-
             var semanticVersion = new SemanticVersion("1.0.0.0");
-            if (!SemanticVersion.TryParse(version, out semanticVersion))
+            if (!string.IsNullOrEmpty(version))
             {
-                log.Error($"Version '{version}' not valid!");
-                return;
+                if (!SemanticVersion.TryParse(version, out semanticVersion))
+                {
+                    log.Error($"Version '{version}' not valid!");
+                    return;
+                }
             }
-
-
-            log.Info($"Upload Package '{name}' Version:'{version}'.");
 
             if (tags == null) tags = new List<string>();
-
-            repository.AddPackage(new Package
+            var p = new Package
             {
                 Name = name,
-                Authors = authors,
                 Description = description,
-                Owners = owners,
-                Version = version,
-                ProjectUrl = projectUrl,
+                Version = semanticVersion.ToNormalizedString(),
                 Tags = tags.ToList()
-            },
-                new DirectoryInfo(directory).GetFiles("*", SearchOption.AllDirectories).Select(f => f.FullName)
+            };
+
+            var packages=repository.GetPackages().Where(pa => pa.Id ==p.Id).OrderByDescending(pa=>new SemanticVersion(pa.Version));
+            if (packages!=null && packages.Count() > 0)
+            {
+                var lastVersion = new SemanticVersion(packages.First().Version);
+                p.Version = new SemanticVersion(lastVersion.Version.Major, lastVersion.Version.Minor+1, lastVersion.Version.Build, lastVersion.SpecialVersion).ToNormalizedString();
+            }
+
+            log.Info($"Upload Package '{name}' Version:'{p.Version}'.");
+            repository.AddPackage(p,
+            PackageBuilder.CreatePackage(p, new DirectoryInfo(directory).GetFiles("*", SearchOption.AllDirectories).Select(f => f.FullName), directory)
             );
         }
 
@@ -356,7 +357,7 @@ namespace WoTget
         private List<IPackage> GetOutdatedPackages()
         {
             var packages = repository.GetPackages();
-            var installedPackages = database.GetInstalledPackages();
+            var installedPackages = localModManager.GetInstalledPackages();
 
             List<IPackage> outdatedPackages = new List<IPackage>();
             foreach (var installed in installedPackages)

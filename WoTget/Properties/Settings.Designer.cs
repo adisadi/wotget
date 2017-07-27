@@ -22,5 +22,17 @@ namespace WoTget.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Games\\World_of_Tanks")]
+        public string WotGameDirectory {
+            get {
+                return ((string)(this["WotGameDirectory"]));
+            }
+            set {
+                this["WotGameDirectory"] = value;
+            }
+        }
     }
 }

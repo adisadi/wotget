@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using WoTget.Core;
 using WoTget.Core.Authoring;
-using WoTget.Core.Database;
+
 using WoTget.Core.Installer;
 using WoTget.Core.Repositories;
 using WoTget.Core.Repositories.GoogleDrive;
@@ -40,20 +40,17 @@ namespace WoTget.GUI
         #endregion
 
 
-        private IDatabase database;
+        private LocalModManager localModManager;
         private IRepository repository;
 
         private Client(IRepository repository)
         {
-        
-            database = new LocalDatabase(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "database"), new PackageInstaller());
+
+            localModManager = new LocalModManager();
             this.repository = repository;
         }
 
-        public bool IsDatabaseInitialized()
-        {
-            return database.Exists && GetWotVersion()==database.WoTVersion;
-        }
+     
 
         public List<PackageModel> VerifiyPackageList(IEnumerable<IPackage> packageNames)
         {
@@ -62,7 +59,7 @@ namespace WoTget.GUI
             if (packageNames == null || packageNames.Count() == 0) return dictionary;
 
 
-            var installedPackages = database.GetInstalledPackages();
+            var installedPackages = localModManager.GetInstalledPackages();
             var packages = repository.GetPackages();
 
             foreach (var packageName in packageNames)
@@ -84,39 +81,51 @@ namespace WoTget.GUI
             return dictionary;
         }
 
+        internal bool HasWotHome()
+        {
+            if (string.IsNullOrEmpty(localModManager.WotHome)) return false;
+            if (!Directory.Exists(localModManager.WotHome)) return false;
+            return true;
+        }
+
         public void InstallPackages(IEnumerable<PackageModel> packages)
         {
 
-            var installedPackages = database.GetInstalledPackages();
+            var installedPackages = localModManager.GetInstalledPackages();
 
             foreach (var package in packages)
             {
-                if (installedPackages.ExistsByName(package))
-                {
-                    database.UninstallPackage(package);
-                }
-
                 using (var stream = repository.GetPackage(package))
                 {
-                    database.InstallPackage(stream);
+                    if (installedPackages.ExistsByName(package))
+                    {
+                        localModManager.UninstallPackage(stream);
+                    }
+                    localModManager.InstallPackage(stream);
                 }
             }
         }
 
-        public void Init(string wotGameDirectory, bool force)
+        public void Init(string wotGameDirectory)
         {
-            database.Init(wotGameDirectory, WoTHelper.GetWoTVersion(wotGameDirectory), force);
+            localModManager.Init(wotGameDirectory);
         }
 
         public void UninstallPackages(IEnumerable<PackageModel> packages)
         {
 
-            var installedPackages = database.GetInstalledPackages();
+            var installedPackages = localModManager.GetInstalledPackages();
 
             foreach (var package in packages)
             {
                 if (installedPackages.ExistsByName(package))
-                    database.UninstallPackage(package);
+                {
+                    using (var stream = repository.GetPackage(package))
+                    {
+                        localModManager.UninstallPackage(stream);
+                    }
+                }
+                    
             }
         }
 
@@ -130,10 +139,14 @@ namespace WoTget.GUI
                 if (outdatedPackages.ExistsByName(package))
                 {
                     var packageToDeinstall = outdatedPackages.FindByName(package.Name).SingleOrDefault();
-                    database.UninstallPackage(packageToDeinstall);
                     using (var stream = repository.GetPackage(package))
                     {
-                        database.InstallPackage(stream);
+                        localModManager.UninstallPackage(stream);
+                    }
+                      
+                    using (var stream = repository.GetPackage(package))
+                    {
+                        localModManager.InstallPackage(stream);
                     }
                 }
             }
@@ -141,7 +154,7 @@ namespace WoTget.GUI
 
         public IEnumerable<IPackage> GetInstalledPackages()
         {
-            return database.GetInstalledPackages();
+            return localModManager.GetInstalledPackages();
         }
 
         public IEnumerable<IPackage> GetPackagesFromRepository(bool onlyLatestVersion = true)
@@ -162,18 +175,18 @@ namespace WoTget.GUI
        
         public string GetWotVersion()
         {
-            return WoTHelper.GetWoTVersion(database.WoTHome);
+            return WoTHelper.GetWoTVersion(localModManager.WotHome);
         }
 
         public string GetWotHome()
         {
-            return database.WoTHome;
+            return localModManager.WotHome;
         }
 
         private List<IPackage> GetOutdatedPackages()
         {
             var packages = repository.GetPackages();
-            var installedPackages = database.GetInstalledPackages();
+            var installedPackages = localModManager.GetInstalledPackages();
 
             List<IPackage> outdatedPackages = new List<IPackage>();
             foreach (var installed in installedPackages)

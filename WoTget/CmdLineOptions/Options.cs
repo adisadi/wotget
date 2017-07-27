@@ -6,7 +6,7 @@ namespace WoTget.CmdLineOptions
     class Options
     {
 
-        [VerbOption("init", HelpText = "Initialize the Versioning Database")]
+        [VerbOption("init", HelpText = "set the WoT Game Directory")]
         public InitSubOptions InitVerb { get; set; }
 
         [VerbOption("list", HelpText = "Lists all available WoT Mod Packages with Status (Installed/Update available...)")]
