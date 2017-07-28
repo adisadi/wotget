@@ -305,21 +305,13 @@ namespace WoTget
 
             foreach (var package in packageToDelete)
             {
-                log.Info($"Delete Package '{package.Name}'.");
+                log.Info($"Delete Package '{package.Name}' Version '{package.Version}'.");
                 repository.RemovePackage(package);
             }
         }
 
         public void AddPackages(string name, string directory, string description, IEnumerable<string> tags, string version)
         {
-
-            if (name.Contains(" "))
-            {
-                log.Error($"Package Name '{name}' contains spaces!");
-                return;
-            }
-
-
             var semanticVersion = new SemanticVersion("1.0.0.0");
             if (!string.IsNullOrEmpty(version))
             {
@@ -347,9 +339,34 @@ namespace WoTget
             }
 
             log.Info($"Upload Package '{name}' Version:'{p.Version}'.");
+
+            IEnumerable<string> files = null;
+            string root = directory;
+            FileAttributes attr = File.GetAttributes(directory);
+            if (attr.HasFlag(FileAttributes.Directory))
+                files = new DirectoryInfo(directory).GetFiles("*", SearchOption.AllDirectories).Select(f => f.FullName);
+            else
+            {
+                if (!directory.EndsWith(".zip")) throw new ArgumentException("only zip files supported!");
+                files = new List<string> { directory };
+                root = Path.GetDirectoryName(directory);
+            }
+
             repository.AddPackage(p,
-            PackageBuilder.CreatePackage(p, new DirectoryInfo(directory).GetFiles("*", SearchOption.AllDirectories).Select(f => f.FullName), directory)
+            PackageBuilder.CreatePackage(p, files, root)
             );
+        }
+
+        internal void RemoveAllPackages()
+        {
+            List<IPackage> packageToDelete = new List<IPackage>();
+            var packages = repository.GetPackages(false);
+
+            foreach (var package in packages)
+            {
+                log.Info($"Delete Package '{package.Name}' Version '{package.Version}'.");
+                repository.RemovePackage(package);
+            }
         }
 
         #endregion

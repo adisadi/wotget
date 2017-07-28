@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace WoTget.Core.Format
 {
@@ -18,16 +14,10 @@ namespace WoTget.Core.Format
             ResModRoot, // 0.9.18
             VersionRoot, //Scripts,....
 
-            ZipFileWotHomeRoot, //res_mods
-            ZipFileResModRoot, // 0.9.18
-            ZipFileVersionRoot, //Scripts,....
-
             WotModHomeRoot, // mods
             WotModModsRoot, //0.9.18
 
             WotMod, //wotmod File
-            WotModZipHomeRoot, // mods
-            WotModZipModsRoot //0.9.18
         }
 
         public static PackageFormat Analize(IEnumerable<string> files)
@@ -42,75 +32,6 @@ namespace WoTget.Core.Format
                 if (file.ToLower().EndsWith(Constants.WotModExtension))
                 {
                     return PackageFormat.WotMod;
-                }
-                else if (file.ToLower().EndsWith(".zip"))
-                {
-                    using (var archive = new ZipArchive(File.OpenRead(file), ZipArchiveMode.Read, false))
-                    {
-                        //search wotmod file
-                        if (archive.Entries.Any(e => e.Name.EndsWith(Constants.WotModExtension)))
-                        {
-                            PackageFormat tempFormat = PackageFormat.NoFormat;
-                            foreach (var entry in archive.Entries.Where(e => e.Name != string.Empty))
-                            {
-                                var entryFileName = entry.FullName;
-                                if (checkWoModHomeRoot(entryFileName))
-                                {
-                                    if (tempFormat != PackageFormat.NoFormat && tempFormat != PackageFormat.WotModZipHomeRoot)
-                                        throw new ArgumentException();
-                                    tempFormat = PackageFormat.WotModZipHomeRoot;
-                                    continue;
-                                }
-
-                                if (checkWoModModsRoot(entryFileName, false))
-                                {
-                                    if (tempFormat != PackageFormat.NoFormat && tempFormat != PackageFormat.WotModZipModsRoot)
-                                        throw new ArgumentException();
-                                    tempFormat = PackageFormat.WotModZipHomeRoot;
-                                    continue;
-                                }
-                            }
-                            value = tempFormat;
-                        }
-                        else
-                        {
-                            PackageFormat tempFormat = PackageFormat.NoFormat;
-                            foreach (var entry in archive.Entries.Where(e => e.Name != string.Empty))
-                            {
-                                var entryFileName = entry.FullName;
-
-                                //Check for wot home root
-                                if (checkWotHomeRoot(entryFileName))
-                                {
-                                    if (tempFormat != PackageFormat.NoFormat && tempFormat != PackageFormat.ZipFileWotHomeRoot)
-                                        throw new ArgumentException();
-                                    tempFormat = PackageFormat.ZipFileWotHomeRoot;
-                                    continue;
-                                }
-
-                                //check for resmods Root           
-                                if (checkResModsRoot(entryFileName, false))
-                                {
-                                    if (tempFormat != PackageFormat.NoFormat && tempFormat != PackageFormat.ZipFileResModRoot)
-                                        throw new ArgumentException();
-                                    tempFormat = PackageFormat.ZipFileResModRoot;
-                                    continue;
-                                }
-                                //check version root folders
-                                if (checkVersionRoot(entryFileName))
-                                {
-                                    if (tempFormat != PackageFormat.NoFormat && tempFormat != PackageFormat.ZipFileVersionRoot)
-                                        throw new ArgumentException();
-                                    tempFormat = PackageFormat.ZipFileVersionRoot;
-                                    continue;
-                                }
-
-
-                            }
-                            value = tempFormat;
-                        }
-
-                    }
                 }
             }
             else
@@ -186,9 +107,9 @@ namespace WoTget.Core.Format
             return matchVersionRoot.Success;
         }
 
-        private static bool checkResModsRoot(string file, bool backSlash = true)
+        private static bool checkResModsRoot(string file)
         {
-            var matchString = backSlash ? "(?<=\\\\)([0-9]{1,2}\\.?)+" : "(?<=/)([0-9]{1,2}\\.?)+";
+            var matchString = "(?<=\\\\)([0-9]{1,2}\\.?)+(?=\\\\)";
 
             var matchResModsRoot = Regex.Match(file, matchString);
             return matchResModsRoot.Success;
@@ -206,9 +127,9 @@ namespace WoTget.Core.Format
             return matchHomeRoot.Success;
         }
 
-        private static bool checkWoModModsRoot(string file, bool backSlash = true)
+        private static bool checkWoModModsRoot(string file)
         {
-            var matchString = backSlash ? "(?<=\\\\)([0-9]{1,2}\\.?)+" : "(?<=/)([0-9]{1,2}\\.?)+";
+            var matchString = "(?<=\\\\)([0-9]{1,2}\\.?)+";
 
             var matchResModsRoot = Regex.Match(file, matchString);
             return matchResModsRoot.Success;

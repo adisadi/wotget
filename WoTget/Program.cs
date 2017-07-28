@@ -132,6 +132,11 @@ namespace WoTget
                 {
                     return RemoveCommand((RemoveSubOptions)invokedVerbInstance);
                 }
+
+                if (invokedVerb == "removeall")
+                {
+                    return RemoveAllCommand();
+                }
             }
             catch (Exception ex)
             {
@@ -142,6 +147,7 @@ namespace WoTget
             return 0;
         }
 
+       
 
         private static void AddConsoleAppender(Level level)
         {
@@ -279,6 +285,12 @@ namespace WoTget
 
             App.UpdatePackages(updateSubOptions.Packages);
 
+            return 0;
+        }
+
+        private static int RemoveAllCommand()
+        {
+            App.RemoveAllPackages();
             return 0;
         }
 

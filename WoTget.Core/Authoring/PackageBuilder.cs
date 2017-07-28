@@ -18,9 +18,6 @@ namespace WoTget.Core.Authoring
 
             if (package.Tags == null) package.Tags = new List<string>();
 
-            //detect format
-            var format = Analize(files);
-
             //Zip Temporary unpack
             if (files.Count() == 1)
             {
@@ -39,8 +36,14 @@ namespace WoTget.Core.Authoring
                     Directory.Delete(tempDirectory, true);
                     return retStream;
                 }
+                else
+                {
+                    throw new ArgumentException("only zip files supported!");
+                }
             }
 
+            //detect format
+            var format = Analize(files);
 
             if (format == PackageFormat.NoFormat) throw new ArgumentException("Could not detect format!");
 

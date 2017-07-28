@@ -68,7 +68,7 @@ namespace WoTget.Core.Authoring
 
         public static string RemoveUntilFolder(string folder, string untilFolder)
         {
-            if (folder.IndexOf(untilFolder) < 0) return "";
+            if (untilFolder.Length>folder.Length) return "";
             return folder.Substring(folder.IndexOf(untilFolder) + untilFolder.Length).Trim(Path.DirectorySeparatorChar);
         }
     }

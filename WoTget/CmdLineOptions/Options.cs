@@ -27,6 +27,9 @@ namespace WoTget.CmdLineOptions
         [VerbOption("remove", HelpText = "Removes WoT Mod Packages from Repository (Space delemited Package Names / For all '.')")]
         public RemoveSubOptions RemoveVerb { get; set; }
 
+        [VerbOption("removeAll", HelpText = "Removes all WoT Mod Packages from Repository")]
+        public object RemoveAllVerb { get; set; }
+
         [HelpOption]
         public string GetUsage()
         {
