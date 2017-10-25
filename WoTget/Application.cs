@@ -1,20 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using WoTget.Core;
 using WoTget.Core.Authoring;
-using WoTget.Core.Database;
 using WoTget.Core.Installer;
-using WoTget.Core.Repositories;
-using WoTget.Core.Repositories.GoogleDrive;
-using WoTget.Model;
+using WoTget.Core.Repository;
+using WoTget.LocalStore;
 
 namespace WoTget
 {
     public class Application
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         #region Singleton
         private static Application instance;
@@ -26,352 +23,185 @@ namespace WoTget
             }
         }
 
-        public static void InitializeInstance(string keyFile)
+        public static void InitializeInstance(string keyFile,string wotGameDirectory)
         {
-            log.Debug($"InitializeInstance KeyFile:'{keyFile}'");
             if (instance == null)
             {
-                instance = new Application(keyFile);
+                instance = new Application(keyFile,wotGameDirectory);
             }
         }
         #endregion
 
-
-        private IDatabase database;
-        private IRepository repository;
-
-        private Application(string keyFile)
+        private Store store;
+        private DriveRepository driveRepository;
+        private string wotGameDirectory;
+        private Application(string keyFile,string wotGameDirectory)
         {
-         
-            database = new LocalDatabase(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "database"),new PackageInstaller());
-            repository = new GoogleDriveRepository(keyFile);
+            driveRepository = new DriveRepository(keyFile);
+            store=new Store(".store\\settings.json");
+            this.wotGameDirectory=wotGameDirectory;
         }
 
-        public bool IsDatabaseInitialized()
+        public enum PackageVerifyFlag
         {
-            return database.Exists && GetWotVersion()==database.WoTVersion;
+            notinstalled,
+            installed,
+            update
+
         }
-
-     
-        public List<PackageModel> VerifiyPackageList(IEnumerable<string> tags, string query, bool allVersion)
+        public Dictionary<IPackage, PackageVerifyFlag> VerifiyPackageList()
         {
-            var packagemodelList = new List<PackageModel>();
-            var packages = new List<IPackage>();
-            if (tags != null)
-            {
-                packages = GetPackagesFromRepository(tags, !allVersion).ToList();
-            }
-            else if (query != null)
-            {
-                packages = GetPackagesFromRepository(query, !allVersion).ToList();
-            }
-            else
-            {
-                packages = GetPackagesFromRepository(!allVersion).ToList();
-            }
+            var dict = new Dictionary<IPackage, PackageVerifyFlag>();
 
-            var installedPackages = database.GetInstalledPackages();
-            var repositoryPackages = repository.GetPackages(false);
-
-
-            foreach (var packageName in packages)
-            {
-                VerifyPackageFlags flag = VerifyPackageFlags.Unknown;
-
-                var installed = installedPackages.FindByNameAndVersion(packageName);
-
-                flag |= VerifyPackageFlags.ExistsOnServer;
-
-                if (installed != null) flag |= VerifyPackageFlags.IsInstalled;
-
-                if (allVersion)
-                {
-                    var repPackages = repositoryPackages.FindByName(packageName.Name);
-                    if (repPackages.Any(p => p.SemanticVersion() > packageName.SemanticVersion()) && flag.HasFlag(VerifyPackageFlags.IsInstalled))
-                    {
-                        flag |= VerifyPackageFlags.IsOutDated;
-                    }
-                }
-                else
-                {
-                    var i = installedPackages.FindByName(packageName.Name).SingleOrDefault();
-                    if (i != null && i.SemanticVersion() < packageName.SemanticVersion())
-                    {
-                        flag |= VerifyPackageFlags.IsInstalled;
-                        flag |= VerifyPackageFlags.IsOutDated;
-                    }
-                }
-
-                packagemodelList.Add(new PackageModel(packageName) { PackageFlags = flag });
-            }
-
-            return packagemodelList;
-        }
-
-        public void InstallPackages(IList<string> packageNames)
-        {
-            log.Debug($"InstallPackages: '{string.Join(" ", packageNames)}'");
-
-            log.Info("Verifing Package(s):");
-
-            if (packageNames == null || packageNames.Count == 0) throw new ArgumentException("No Packages spezified!");
-
-            List<IPackage> packagesToInstall = new List<IPackage>();
-
-            if (packageNames.Count == 1 && packageNames[0].Trim() == ".")
-            {
-                packagesToInstall = repository.GetPackages().ToList();
-                foreach (var package in packagesToInstall)
-                {
-                    log.Info($"Package: '{package.Name}' OK.");
-                }
-            }
-            else
-            {
-                var packages = repository.GetPackages();
-                foreach (var packageName in packageNames)
-                {
-                    if (packages.ExistsByName(packageName))
-                    {
-                        packagesToInstall.AddRange(packages.FindByName(packageName));
-                        log.Info($"Package: '{packageName}' OK.");
-                    }
-                    else
-                    {
-                        log.Error($"Package: '{packageName}' not found!");
-                    }
-                }
-            }
-
-            log.Info("");
-
-            var installedPackages = database.GetInstalledPackages();
-
-            foreach (var package in packagesToInstall)
-            {
-                if (installedPackages.ExistsByName(package))
-                {
-                    log.Info($"Remove installed Package: '{package.Name}'");
-                    database.UninstallPackage(package);
-                }
-
-                log.Info($"Downloading Package: '{package.Name}'");
-                using (var stream = repository.GetPackage(package))
-                {
-                    log.Info($"Installing Package: '{package.Name}'");
-                    database.InstallPackage(stream);
-                }
-
-            }
-        }
-
-        public void Init(string wotGameDirectory, bool force)
-        {
-            database.Init(wotGameDirectory, WoTHelper.GetWoTVersion(wotGameDirectory), force);
-        }
-
-        public void UninstallPackages(IList<string> packageNames)
-        {
-            if (packageNames == null || packageNames.Count == 0) throw new ArgumentException("No Packages spezified!");
-
-            var packages = database.GetInstalledPackages();
-            if (!(packageNames.Count == 1 && packageNames[0].Trim() == "."))
-            {
-                packages = packages.Where(p => packageNames.Contains(p.Name)).ToList();
-            }
+            var packages = driveRepository.GetPackages().ToList();
+            var installedPackages = store.Packages;
 
             foreach (var package in packages)
             {
-                try
+
+                var installedPackage = installedPackages.SingleOrDefault(p => p.Id == package.Id);
+
+                if (installedPackage == null)
                 {
-                    log.Info($"Uninstall Package: '{package.Name}'");
-                    database.UninstallPackage(package);
+                    dict.Add(package, PackageVerifyFlag.notinstalled);
+                    continue;
                 }
-                catch (ArgumentException ex)
+
+                if (package.SemanticVersion > installedPackage.SemanticVersion)
                 {
-                    log.Error(ex.Message);
+                    dict.Add(package, PackageVerifyFlag.update);
+                    continue;
                 }
+
+                dict.Add(package, PackageVerifyFlag.installed);
             }
+
+            return dict;
         }
 
-        public void UpdatePackages(IList<string> packageNames)
+        public void AddPackage(string name, string description, string version, string archive, bool force)
         {
-            if (packageNames == null || packageNames.Count == 0) throw new ArgumentException("No Packages spezified!");
 
-            log.Info("Verifing Package(s):");
-
-            List<IPackage> outdatedPackages = GetOutdatedPackages();
-
-            if (packageNames.Count == 1 && packageNames[0].Trim() == ".")
-                packageNames = outdatedPackages.Select(p => p.Name).ToList();
-
-            if (packageNames == null || packageNames.Count == 0)
+            var p = new Package
             {
-                log.Info($"Nothing to Update!");
-                return;
-            }
+                Name = name,
+                Description = description,
+                Version = version
+            };
 
-            var repositoryPackages = repository.GetPackages();
-
-            foreach (var packageName in packageNames)
+            var package = driveRepository.GetPackages().SingleOrDefault(pa => pa.Id == p.Id);
+            if (package != null)
             {
-                if (outdatedPackages.ExistsByName(packageName))
+                if (package.SemanticVersion >= p.SemanticVersion && !force)
                 {
-
-                    var package = outdatedPackages.FindByName(packageName).SingleOrDefault();
-
-                    log.Info($"Updating Package: 'packageName'");
-                    log.Info($"Remove installed Package: '{package.Name}' Version: '{package.Version}'");
-                    database.UninstallPackage(package);
-
-                    var packageToInstall = repositoryPackages.FindByName(packageName).SingleOrDefault();
-
-                    log.Info($"Downloading Package: '{packageToInstall.Name}' Version: '{packageToInstall.Version}'");
-                    using (var stream = repository.GetPackage(packageToInstall))
-                    {
-                        log.Info($"Installing Package: '{packageToInstall.Name}' Version: '{packageToInstall.Version}'");
-                        database.InstallPackage(stream);
-                    }
+                    throw new ArgumentException($"Package already exists with Version '{package.SemanticVersion.ToNormalizedString()}'!");
                 }
-                else
-                {
-                    log.Info($"Package: '{packageName}' up to date or doesn't exist");
-                }
+
+                RemovePackage(name);
             }
+
+            var allowedArchives = new List<string> { ".zip", ".rar" };
+            var ext = Path.GetExtension(archive);
+
+            if (!allowedArchives.Contains(ext))
+                throw new ArgumentException($"Only '{string.Join(",", allowedArchives)}' Archives implemented!");
+
+
+            driveRepository.AddPackage(p, PackageBuilder.Create(archive,WoTHelper.GetWoTVersion(wotGameDirectory)));
         }
 
-
-
-        public IEnumerable<IPackage> GetInstalledPackages()
-        {
-            return database.GetInstalledPackages();
-        }
-
-        public IEnumerable<IPackage> GetPackagesFromRepository(bool onlyLatestVersion = true)
-        {
-            return repository.GetPackages(onlyLatestVersion);
-        }
-
-        public IEnumerable<IPackage> GetPackagesFromRepository(IEnumerable<string> tags, bool onlyLatestVersion = true)
-        {
-            return repository.GetPackages(tags, onlyLatestVersion);
-        }
-
-        public IEnumerable<IPackage> GetPackagesFromRepository(string query, bool onlyLatestVersion = true)
-        {
-            return repository.GetPackages(query, onlyLatestVersion);
-        }
-
-        public static string GetWotVersion(string wotHome)
-        {
-            return WoTHelper.GetWoTVersion(wotHome);
-        }
-
-        public string GetWotVersion()
-        {
-            return WoTHelper.GetWoTVersion(database.WoTHome);
-        }
-
-        public string GetWotHome()
-        {
-            return database.WoTHome;
-        }
-
-
-        #region "Repository Functions"
-        public void RemovePackages(string packageName, string version = null)
+        public void RemovePackage(string packageName)
         {
             if (string.IsNullOrEmpty(packageName)) throw new ArgumentException("No Packages spezified!");
 
-            List<IPackage> packageToDelete = new List<IPackage>();
-            var packages = repository.GetPackages();
+            var ptemp = new Package { Name = packageName };
+            var packageToDelete = driveRepository.GetPackages().SingleOrDefault(p => p.Id == ptemp.Id);
 
-            try
-            {
-                if (string.IsNullOrEmpty(version))
-                {
-                    packageToDelete.AddRange(packages.Where(t => t.Name.ToLower() == packageName.ToLower()));
-                }
-                else
-                {
-                    packageToDelete.AddRange(packages.Where(t => t.Name.ToLower() == packageName.ToLower() && t.Version == version));
-                }
-            }
-            catch (ArgumentNullException)
-            {
-                log.Info($"Package '{packageName}' with Version:'{version}' doesn't exist!");
-            }
+            if (packageToDelete == null) throw new ArgumentException($"not found!");
 
-            foreach (var package in packageToDelete)
-            {
-                log.Info($"Delete Package '{package.Name}'.");
-                repository.RemovePackage(package);
-            }
+            driveRepository.RemovePackage(packageToDelete);
         }
 
-        public void AddPackages(string name, string directory, string description, IEnumerable<string> tags, string authors, string owners, string projectUrl, string version)
+        public IPackage InstallPackage(string packageName)
         {
+            if (string.IsNullOrEmpty(packageName)) throw new ArgumentException("No Packages spezified!");
 
-            if (name.Contains(" "))
+            var ptemp = new Package { Name = packageName };
+            var packageToInstall = VerifiyPackageList().SingleOrDefault(p => p.Key.Id == ptemp.Id);
+            if (packageToInstall.Key == null) throw new ArgumentException($"Package '{packageName}' not found!");
+
+            if (packageToInstall.Value == PackageVerifyFlag.update)
             {
-                log.Error($"Package Name '{name}' contains spaces!");
-                return;
+                //UnInstall Package
+                UninstallPackage(packageToInstall.Key.Name);
             }
 
-
-            if (!new DirectoryInfo(directory).GetDirectories().Any(d => d.Name == "res_mods"))
+            using (var stream = driveRepository.GetPackage(packageToInstall.Key))
             {
-                log.Error($"Directory '{directory}' doesn't contains res_mods Directory!");
-                return;
+                new PackageInstaller().InstallPackageStream(stream, wotGameDirectory);
+                store.Add(packageToInstall.Key, stream);
             }
 
-            var semanticVersion = new SemanticVersion("1.0.0.0");
-            if (!SemanticVersion.TryParse(version, out semanticVersion))
-            {
-                log.Error($"Version '{version}' not valid!");
-                return;
-            }
-
-
-            log.Info($"Upload Package '{name}' Version:'{version}'.");
-
-            if (tags == null) tags = new List<string>();
-
-            repository.AddPackage(new Package
-            {
-                Name = name,
-                Authors = authors,
-                Description = description,
-                Owners = owners,
-                Version = version,
-                ProjectUrl = projectUrl,
-                Tags = tags.ToList()
-            },
-                new DirectoryInfo(directory).GetFiles("*", SearchOption.AllDirectories).Select(f => f.FullName)
-            );
+            return packageToInstall.Key;
         }
 
-        #endregion
-
-        private List<IPackage> GetOutdatedPackages()
+        public void UninstallPackage(string packageName)
         {
-            var packages = repository.GetPackages();
-            var installedPackages = database.GetInstalledPackages();
+            if (string.IsNullOrEmpty(packageName)) throw new ArgumentException("No Packages spezified!");
 
-            List<IPackage> outdatedPackages = new List<IPackage>();
-            foreach (var installed in installedPackages)
+            var ptemp = new Package { Name = packageName };
+            var packageToUninstall = VerifiyPackageList().SingleOrDefault(p => p.Key.Id == ptemp.Id);
+            if (packageToUninstall.Key == null) throw new ArgumentException($"not found!");
+            if (packageToUninstall.Value == PackageVerifyFlag.notinstalled) throw new ArgumentException($"not installed!");
+
+            if (store.PackageExists(packageToUninstall.Key))
             {
-                if (packages.ExistsByName(installed))
+                using (var stream = store.GetPackage(packageToUninstall.Key))
                 {
-                    var package = packages.FindByName(installed.Name).SingleOrDefault();
-                    if (package.SemanticVersion() > installed.SemanticVersion())
+                    new PackageInstaller().UninstallPackageStream(stream, wotGameDirectory);
+                    store.Remove(packageToUninstall.Key);
+                }
+
+                //Reinstall Others from Store
+                foreach (var p in VerifiyPackageList().Where(e => e.Value == PackageVerifyFlag.installed || e.Value == PackageVerifyFlag.update))
+                {
+                    using (var stream = store.GetPackage(p.Key))
                     {
-                        outdatedPackages.Add(installed);
+                        new PackageInstaller().InstallPackageStream(stream, wotGameDirectory);
                     }
                 }
             }
-            return outdatedPackages;
         }
 
+        public IPackage UpdatePackage(string packageName)
+        {
+            if (string.IsNullOrEmpty(packageName)) throw new ArgumentException("No Packages spezified!");
+
+            var ptemp = new Package { Name = packageName };
+            var packageToUpdate = VerifiyPackageList().SingleOrDefault(p => p.Key.Id == ptemp.Id);
+            if (packageToUpdate.Key == null) throw new ArgumentException($"Package '{packageName}' not found!");
+            if (packageToUpdate.Value == PackageVerifyFlag.notinstalled) throw new ArgumentException($"not installed!");
+            if (packageToUpdate.Value == PackageVerifyFlag.installed) throw new ArgumentException($"nothing to update!");
+
+            if (store.PackageExists(packageToUpdate.Key))
+            {
+                using (var stream = store.GetPackage(packageToUpdate.Key))
+                {
+                    new PackageInstaller().UninstallPackageStream(stream, wotGameDirectory);
+                    store.Remove(packageToUpdate.Key);
+                }
+
+                //Reinstall Others from Store
+                foreach(var p in VerifiyPackageList().Where(e=>e.Value==PackageVerifyFlag.installed || e.Value == PackageVerifyFlag.update))
+                {
+                    using (var stream = store.GetPackage(p.Key))
+                    {
+                        new PackageInstaller().InstallPackageStream(stream, wotGameDirectory);
+                    }
+                }
+            }
+
+            return InstallPackage(packageName);
+        }
     }
 }

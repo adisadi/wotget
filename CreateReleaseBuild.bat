@@ -1,2 +1,5 @@
-call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\VsMSBuildCmd.bat"
-msbuild  /p:Configuration=Release
+cd WoTget
+dotnet publish -r win10-x64 -o ..\buildx64 -c Release
+copy settings.json ..\buildx64\settings.js
+pause
+cd ..
