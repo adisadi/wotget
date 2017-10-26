@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.IO;
+using WoTget.Core.Authoring;
 
 namespace WoTget.Core.Format
 {
@@ -20,7 +22,7 @@ namespace WoTget.Core.Format
             WotMod, //wotmod File
         }
 
-        public static PackageFormat Analize(IEnumerable<string> files)
+        public static PackageFormat Analyze(IEnumerable<string> files)
         {
             PackageFormat value = PackageFormat.NoFormat;
 
@@ -99,6 +101,36 @@ namespace WoTget.Core.Format
             }
 
             return value;
+        }
+
+        public static List<string> MultiRootAnalyze(IEnumerable<string> files,PackageFormat format)
+        {
+            var transformedDirectories = new List<string>();
+            if (format == PackageFormat.NoFormat) throw new ArgumentException("Package format unknown!");
+            switch (format)
+            {
+                case PackageFormat.ResModRoot:
+                    transformedDirectories = files.Select(f => PackageHelper.RemoveUntilFolderBackward(Path.GetDirectoryName(f), PackageHelper.GetWotVersionFolder(f))).ToList();
+                    break;
+                case PackageFormat.VersionRoot:
+                    break;
+                case PackageFormat.WotHomeRoot:
+                    transformedDirectories = files.Select(f => PackageHelper.RemoveUntilFolderBackward(Path.GetDirectoryName(f),Constants.ResModsFolder)).ToList();
+                    break;
+                case PackageFormat.WotMod:
+                    break;
+                case PackageFormat.WotModHomeRoot:
+                    transformedDirectories = files.Select(f => PackageHelper.RemoveUntilFolderBackward(Path.GetDirectoryName(f), Constants.ModsFolder)).ToList();
+                    break;
+                case PackageFormat.WotModModsRoot:
+                    transformedDirectories = files.Select(f => PackageHelper.RemoveUntilFolderBackward(Path.GetDirectoryName(f), PackageHelper.GetWotVersionFolder(f) )).ToList();
+                    break;
+            }
+
+            transformedDirectories = transformedDirectories.Where(f=>!string.IsNullOrEmpty(f)).Distinct().ToList();
+
+            return transformedDirectories;
+
         }
 
         private static bool checkVersionRoot(string file)

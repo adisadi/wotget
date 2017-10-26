@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.CommandLineUtils;
 using WoTget.Core.Authoring;
+using System.Collections.Generic;
 
 namespace WoTget.Core.Commands
 {
@@ -41,9 +42,17 @@ namespace WoTget.Core.Commands
                 return;
             }
 
-            ConsoleHelper.ColoredConsoleWrite(ConsoleColor.White, $"Removing Package '{_name}'...");
-            Application.Instance.RemovePackage(_name);
-            ConsoleHelper.ColoredConsoleWriteLine(ConsoleColor.Green, "done");
+            var names = new List<string>() { _name };
+            if (_name == "*")
+            {
+                names = Application.Instance.VerifiyPackageList().Select(p => p.Key.Name).ToList();
+            }
+            foreach (var name in names)
+            {
+                ConsoleHelper.ColoredConsoleWrite(ConsoleColor.White, $"Removing Package '{name}'...");
+                Application.Instance.RemovePackage(name);
+                ConsoleHelper.ColoredConsoleWriteLine(ConsoleColor.Green, "done");
+            }
         
         }
     }

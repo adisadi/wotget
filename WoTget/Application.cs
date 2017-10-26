@@ -79,7 +79,7 @@ namespace WoTget
             return dict;
         }
 
-        public void AddPackage(string name, string description, string version, string archive, bool force)
+        public void AddPackage(string name, string description, string version, string archive, bool force, Func<List<string>, int> multiRoot)
         {
 
             var p = new Package
@@ -107,7 +107,7 @@ namespace WoTget
                 throw new ArgumentException($"Only '{string.Join(",", allowedArchives)}' Archives implemented!");
 
 
-            driveRepository.AddPackage(p, PackageBuilder.Create(archive,WoTHelper.GetWoTVersion(wotGameDirectory)));
+            driveRepository.AddPackage(p, PackageBuilder.Create(archive,WoTHelper.GetWoTVersion(wotGameDirectory),multiRoot));
         }
 
         public void RemovePackage(string packageName)

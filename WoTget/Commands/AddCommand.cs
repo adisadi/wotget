@@ -74,7 +74,27 @@ namespace WoTget.Core.Commands
             }
 
             ConsoleHelper.ColoredConsoleWrite(ConsoleColor.White, $"Adding Package '{_name}'...");
-            Application.Instance.AddPackage(_name, _description, _version, _archive, _force);
+            Application.Instance.AddPackage(_name, _description, _version, _archive, _force, list =>
+            {
+                ConsoleHelper.ColoredConsoleWriteLine(ConsoleColor.Cyan, "");
+                ConsoleHelper.ColoredConsoleWriteLine(ConsoleColor.Cyan, $"Multiple Mods found, select one:");
+
+                Start:
+                for (var i = 0; i < list.Count; i++)
+                {
+                    ConsoleHelper.ColoredConsoleWriteLine(ConsoleColor.Cyan, $"{i}:{list[i]}");
+                }
+
+                var selected = Console.ReadKey();
+
+                if (!char.IsNumber(selected.KeyChar)) { goto Start; }
+
+                var s = int.Parse(selected.KeyChar.ToString());
+                if (s >= list.Count) { goto Start; }
+
+                return s;
+
+            });
             ConsoleHelper.ColoredConsoleWriteLine(ConsoleColor.Green, "done");
         }
     }

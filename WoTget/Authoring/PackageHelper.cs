@@ -20,5 +20,17 @@ namespace WoTget.Core.Authoring
             if (untilFolder.Length>folder.Length) return "";
             return folder.Substring(folder.IndexOf(untilFolder) + untilFolder.Length).Trim(Path.DirectorySeparatorChar);
         }
+
+        public static string RemoveBeforeFolder(string folder, string untilFolder)
+        {
+            if (untilFolder.Length > folder.Length) return "";
+            return folder.Substring(folder.IndexOf(untilFolder)).Trim(Path.DirectorySeparatorChar);
+        }
+
+        public static string RemoveUntilFolderBackward(string folder, string untilFolder)
+        {
+            if (untilFolder.Length > folder.Length) return "";
+            return folder.Substring(0,folder.IndexOf(untilFolder)).Trim(Path.DirectorySeparatorChar);
+        }
     }
 }
